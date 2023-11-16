@@ -34,3 +34,20 @@ def enter_course_numbers(courses, n):
             else:
                 print("Please enter a valid course number")
             return selected_courses
+        
+def generate_schedule(courses, selected_courses):
+    schedule = []
+    for course in courses:
+        if course[0] in selected_courses:
+            schedule.append(course)
+
+    return schedule
+
+def display_schedule(schedule):
+    if not schedule:
+        print("A valid schedule could not be generated.")
+    else:
+        print ("\nYour Schedule")
+        for course in schedule:
+            print (f"Course: {course [0]} Section: {course[1]} Days: {course[2]} Time: {course[3]} - {course[4]}")
+
