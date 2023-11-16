@@ -51,3 +51,20 @@ def display_schedule(schedule):
         for course in schedule:
             print (f"Course: {course [0]} Section: {course[1]} Days: {course[2]} Time: {course[3]} - {course[4]}")
 
+def main():
+    file_path = file.txt
+    courses = read_course_data(file_path)
+
+    display_courses(courses)
+
+    n = number_of_courses()
+    selected_courses = enter_course_numbers(courses, n)
+
+    schedule = generate_schedule(courses, selected_courses)
+
+    display_schedule(schedule)
+
+    if __name__ == "__main__":
+        main()
+
+
