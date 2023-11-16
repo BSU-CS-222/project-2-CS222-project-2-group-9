@@ -1,0 +1,7 @@
+def read_course_data(file_path):
+    courses = []
+    with open(file_path, 'r') as file:
+        for line in file:
+            course_info = line.strip().split()
+            courses.append(course_info)
+    return courses
