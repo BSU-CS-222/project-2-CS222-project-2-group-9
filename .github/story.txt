@@ -1,0 +1,11 @@
+As a student, course numbers should be preseneted to me so that I can choose courses for my schedule.
+
+
+The system should prompt me to enter the number of courses (n) I would like to register for.
+
+
+I want to be able to enter n distinct course numbers that I will be taking for the next semester.
+
+
+I expect the system to generate and display my schedule, showing the course number, section number, as well as when we meet. If my schedule can not be generated due to conflicts,
+I should be made aware of this. If my schedule is good to go, I should see its display without any issue.

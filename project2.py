@@ -4,7 +4,7 @@ def read_course_data(file_path):
         for line in file:
             course_info = line.strip().split()
             courses.append(course_info)
-    return
+    return courses
 
 def display_courses(courses):
     course_crns = set(course[0] for course in courses)
@@ -28,20 +28,77 @@ def enter_course_numbers(courses, n):
     for i in range(n):
         while True:
             course_number = input(f"Enter course number {i + 1}:").upper()
-            if any(course_number == course[0] for course in courses):
+            conflicting_courses = get_conflicting_courses(course_number, selected_courses, courses)
+
+            if not conflicting_courses:
                 selected_courses.add(course_number)
                 break
             else:
+                print(f"Conflicting courses detected: {', '.join(conflicting_courses)}")
                 print("Please enter a valid course number")
-            return selected_courses
+
+    return selected_courses
+
+def get_conflicting_courses(new_course, selected_courses, courses):
+    conflicting_courses = set()
+
+    for selected_course in selected_courses:
+        if time_overlap(get_course_info(new_course, courses), get_course_info(selected_course, courses)):
+            conflicting_courses.add(selected_course)
+
+    return conflicting_courses
+
+def get_course_info(course_number, courses):
+    for course in courses:
+        if course[0] == course_number:
+            return course
+
+    return None
         
 def generate_schedule(courses, selected_courses):
     schedule = []
+    selected_times = set()
+
     for course in courses:
         if course[0] in selected_courses:
-            schedule.append(course)
+            try:
+                course_number, section, days, start_time, end_time = course
+                course_time = (course_number, days, start_time, end_time)
+
+                # Check if the course has already been added to the schedule
+                if course_number not in (c[0] for c in schedule):
+                    # If no time conflicts and not already in the schedule, add the course
+                    if not has_time_conflict(course_time, selected_times):
+                        schedule.append(course)
+                        selected_times.add(course_time)
+                    else:
+                        print(f"Debugging: Time conflict for course {course}")
+            except ValueError:
+                print(f"Debugging: ValueError in course data: {course}")
 
     return schedule
+
+def has_time_conflict(course, selected_times):
+    for existing_time in selected_times:
+        if time_overlap(course, existing_time):
+            return True
+    return False
+
+
+
+
+
+def time_overlap(time1, time2):
+    try:
+        days_overlap = any(day in time1[2] for day in time2[2]) or any(day in time2[2] for day in time1[2])
+        time1_start, time1_end = int(time1[3]), int(time1[4])
+        time2_start, time2_end = int(time2[3]), int(time2[4])
+        time_conflict = (time1_start < time2_end and time1_end > time2_start) or (time2_start < time1_end and time2_end > time1_start)
+
+        return days_overlap and time_conflict
+    except IndexError:
+        print(f"Debugging: IndexError in time data: {time1}")
+        return False
 
 def display_schedule(schedule):
     if not schedule:
@@ -52,7 +109,7 @@ def display_schedule(schedule):
             print (f"Course: {course [0]} Section: {course[1]} Days: {course[2]} Time: {course[3]} - {course[4]}")
 
 def main():
-    file_path = file.txt
+    file_path = "file.txt"
     courses = read_course_data(file_path)
 
     display_courses(courses)
@@ -64,7 +121,5 @@ def main():
 
     display_schedule(schedule)
 
-    if __name__ == "__main__":
-        main()
-
-
+if __name__ == "__main__":
+    main()
