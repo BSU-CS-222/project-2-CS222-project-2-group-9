@@ -84,10 +84,6 @@ def has_time_conflict(course, selected_times):
             return True
     return False
 
-
-
-
-
 def time_overlap(time1, time2):
     try:
         days_overlap = any(day in time1[2] for day in time2[2]) or any(day in time2[2] for day in time1[2])
