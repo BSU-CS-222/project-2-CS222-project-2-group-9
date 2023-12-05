@@ -1,9 +1,15 @@
 def read_course_data(file_path):
     courses = []
-    with open(file_path, 'r') as file:
-        for line in file:
-            course_info = line.strip().split()
-            courses.append(course_info)
+    try:
+        with open(file_path, 'r') as file:
+            for line in file:
+                course_info = line.strip().split()
+                courses.append(course_info)
+    except FileNotFoundError:
+        print(f"Error: File not found - {file_path}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
     return courses
 
 def display_courses(courses):
@@ -15,13 +21,13 @@ def display_courses(courses):
 def number_of_courses():
     while True:
         try:
-            n = int(input("How many courses would you like to register for?"))
+            n = int(input("How many courses would you like to register for? "))
             if n > 0:
                 return n
             else:
-                print ("Please enter a positive integer")
+                print("Please enter a positive integer.")
         except ValueError:
-            print ("Invalid input. Please input an integer")
+            print("Invalid input. Please input an integer.")
 
 def enter_course_numbers(courses, n):
     selected_courses = set()
@@ -56,27 +62,37 @@ def get_course_info(course_number, courses):
     return None
         
 def generate_schedule(courses, selected_courses):
-    schedule = []
-    selected_times = set()
+    def backtrack(schedule, selected_times):
+        for course in courses:
+            if course[0] in selected_courses and course[0] not in (c[0] for c in schedule):
+                try:
+                    course_number, section, days, start_time, end_time = course
+                    course_time = (course_number, days, start_time, end_time)
 
-    for course in courses:
-        if course[0] in selected_courses:
-            try:
-                course_number, section, days, start_time, end_time = course
-                course_time = (course_number, days, start_time, end_time)
-
-                # Check if the course has already been added to the schedule
-                if course_number not in (c[0] for c in schedule):
-                    # If no time conflicts and not already in the schedule, add the course
                     if not has_time_conflict(course_time, selected_times):
                         schedule.append(course)
                         selected_times.add(course_time)
-                    else:
-                        print(f"Debugging: Time conflict for course {course}")
-            except ValueError:
-                print(f"Debugging: ValueError in course data: {course}")
 
-    return schedule
+                        if len(schedule) == len(selected_courses):
+                            # All courses are scheduled, return the result
+                            return schedule
+
+                        result = backtrack(schedule, selected_times)
+
+                        if result:
+                            return result
+
+                        # If the current course didn't lead to a valid schedule, backtrack
+                        schedule.pop()
+                        selected_times.remove(course_time)
+                except ValueError:
+                    print(f"Debugging: ValueError in course data: {course}")
+
+        # No valid schedule found
+        return None
+
+    return backtrack([], set())
+
 
 def has_time_conflict(course, selected_times):
     for existing_time in selected_times:
@@ -107,6 +123,10 @@ def display_schedule(schedule):
 def main():
     file_path = "file.txt"
     courses = read_course_data(file_path)
+
+    if not courses:
+        print("No course data available. Exiting.")
+        return
 
     display_courses(courses)
 
