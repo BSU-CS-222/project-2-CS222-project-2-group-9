@@ -49,7 +49,9 @@ def get_conflicting_courses(new_course, selected_courses, courses):
     conflicting_courses = set()
 
     for selected_course in selected_courses:
+        print(f"New Course: {new_course}, Selected Course: {selected_course}")
         if time_overlap(get_course_info(new_course, courses), get_course_info(selected_course, courses)):
+            print("Time overlap detected.")
             conflicting_courses.add(selected_course)
 
     return conflicting_courses
@@ -121,7 +123,7 @@ def display_schedule(schedule):
             print (f"Course: {course [0]} Section: {course[1]} Days: {course[2]} Time: {course[3]} - {course[4]}")
 
 def main():
-    file_path = "file.txt"
+    file_path = "file2.txt"
     courses = read_course_data(file_path)
 
     if not courses:
